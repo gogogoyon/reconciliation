@@ -128,7 +128,7 @@ public class AuditFactory {
 	 * @param detailHandler      对账明细处理实例
 	 * @return
 	 */
-	public static <T extends BaseConsumeItem> AuditConsumerImpl<T> createConsumer(AuditFileResolver auditFileResolver, ConsumeRecorder<T> recorder, DetailHandler<T> detailHandler) {
+	public static <T extends BaseConsumeItem> AuditConsumer createConsumer(AuditFileResolver auditFileResolver, ConsumeRecorder<T> recorder, DetailHandler<T> detailHandler) {
 		return new AuditConsumerImpl<T>(auditFileResolver, recorder, detailHandler);
 	}
 	
@@ -138,7 +138,7 @@ public class AuditFactory {
 	 * @param detailHandler      对账明细处理实例
 	 * @return
 	 */
-	public static <T extends BaseConsumeItem> AuditConsumerImpl<T> createConsumer(AuditFileResolver auditFileResolver, DetailHandler<T> detailHandler) {
+	public static <T extends BaseConsumeItem> AuditConsumer createConsumer(AuditFileResolver auditFileResolver, DetailHandler<T> detailHandler) {
 		return new AuditConsumerImpl<T>(auditFileResolver, new NothingConsumeRecorder<T>(), detailHandler);
 	}
 
