@@ -1,7 +1,7 @@
 package com.samlic.accumulation.ecosystem.reconciliation.extend;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.samlic.accumulation.ecosystem.reconciliation.FileHandleRecord;
 import com.samlic.accumulation.ecosystem.reconciliation.FileHandleRecorder;
@@ -13,7 +13,7 @@ import com.samlic.accumulation.ecosystem.reconciliation.FileHandleRecorder;
  *
  */
 public class MapFileHandleRecorder implements FileHandleRecorder {
-	private Map<String, FileHandleRecord> recordMap = new HashMap<String, FileHandleRecord>();
+	private Map<String, FileHandleRecord> recordMap = new ConcurrentHashMap<String, FileHandleRecord>();
 	
 	@Override
 	public FileHandleRecord getRecord(String pattern, String auditTime) {
@@ -24,14 +24,15 @@ public class MapFileHandleRecorder implements FileHandleRecorder {
 	@Override
 	public Long save(FileHandleRecord record) {
 		String key = record.getPattern() + record.getAuditTime();
-		recordMap.put(key, record);
+		recordMap.putIfAbsent(key, record);
 		
 		return (long)key.hashCode();
 	}
 
 	@Override
 	public void update(FileHandleRecord record) {
-		save(record);
+		String key = record.getPattern() + record.getAuditTime();
+		recordMap.put(key, record);
 	}
 
 }

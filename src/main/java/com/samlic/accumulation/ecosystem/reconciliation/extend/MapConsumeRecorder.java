@@ -18,7 +18,7 @@ public class MapConsumeRecorder<T extends BaseConsumeItem> extends MapFileHandle
 	private Map<Long, Queue<T>> recordMap = new HashMap<Long, Queue<T>>();
 	
 	@Override
-	public T getLatestItem(Long auditId) {
+	public synchronized T getLatestItem(Long auditId) {
 		if(recordMap.containsKey(auditId)) {
 			return recordMap.get(auditId).peek();
 		}
@@ -27,7 +27,7 @@ public class MapConsumeRecorder<T extends BaseConsumeItem> extends MapFileHandle
 	}
 
 	@Override
-	public void saveItem(T record) {
+	public synchronized void saveItem(T record) {
 		Queue<T> queue = null;
 		if(recordMap.containsKey(record.getAuditId())) {
 			queue = recordMap.get(record.getAuditId());				
