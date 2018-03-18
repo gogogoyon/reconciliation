@@ -9,6 +9,7 @@ FileHandleRecorder: 文件处理记录器，用于对账文件生成和消费记
 ConsumeRecorder: 消费记录器，记录消费文件记录，已经对账明细<br>
 DetailHandler: 明细处理接口，用于代理消费对账文件明细数据的逻辑行为<br>
 Iteratorable: 定义生产对账文件数据的统一视图<br>
+DataFetcher: 数据获取接口，支持分批获取数据
 <br>
 常见用例详见测试类：<br>
 com.samlic.accumulation.ecosystem.reconciliation.AuditFileTest<br>
