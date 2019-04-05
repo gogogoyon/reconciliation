@@ -48,7 +48,7 @@ public class AuditFileTest {
 		File file = auditFileBuilder.getResult();
 		System.out.println(file.getAbsolutePath());
 		AuditFileResolver auditFileResolver = AuditFactory.createFileResolver(file);
-		AuditFactory.createConsumer(auditFileResolver, new MyDetailHandler()).consume(file);
+		AuditFactory.createConsumer(auditFileResolver, new MyDetailHandler()).consume();
 	}
 	
 	/**
@@ -99,7 +99,7 @@ public class AuditFileTest {
 		File file = auditFileBuilder.getResult();
 		System.out.println(file.getAbsolutePath());
 		AuditFileResolver auditFileResolver = AuditFactory.createFileResolver(file);
-		AuditFactory.createConsumer(auditFileResolver, new MyDetailHandler()).consume(file);
+		AuditFactory.createConsumer(auditFileResolver, new MyDetailHandler()).consume();
 	}
 	
 	static class TestEntity extends IteratorableEntityBean {

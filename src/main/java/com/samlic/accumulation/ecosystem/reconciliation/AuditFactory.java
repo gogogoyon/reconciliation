@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import com.samlic.accumulation.ecosystem.reconciliation.FileHandleRecord.AuditRole;
+
 /**
  * 对账工厂类，提供创建对账文件和解析对账文件的方法，提供创建对账生产者和消费者服务实例的方法
  * @author yuanpeng
@@ -122,6 +124,16 @@ public class AuditFactory {
 	}
 	
 	/**
+	 * 创建对账文件解析器
+	 * @param downloader  对账文件下载器
+	 * @param suffix  对账文件后缀
+	 * @return
+	 */
+	public static AuditFileResolver createFileResolver(Downloader downloader, String suffix) {
+		return new AuditFileResolver().downloader(downloader).suffix(suffix);			
+	}
+	
+	/**
 	 * 创建对账文件消费者实例
 	 * @param auditFileResolver  对账文件解析器
 	 * @param recorder           消费记录器
@@ -173,7 +185,7 @@ public class AuditFactory {
 		static final NothingFileHandleRecorder INSTANCE = new NothingFileHandleRecorder();
 		
 		@Override
-		public FileHandleRecord getRecord(String pattern, String auditTime) {
+		public FileHandleRecord getRecord(AuditRole role, String pattern, String auditTime) {
 			return null;
 		}
 

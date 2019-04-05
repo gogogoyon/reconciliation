@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.samlic.accumulation.ecosystem.reconciliation.FileHandleRecord;
+import com.samlic.accumulation.ecosystem.reconciliation.FileHandleRecord.AuditRole;
 import com.samlic.accumulation.ecosystem.reconciliation.FileHandleRecorder;
 
 
@@ -16,7 +17,7 @@ public class MapFileHandleRecorder implements FileHandleRecorder {
 	private Map<String, FileHandleRecord> recordMap = new ConcurrentHashMap<String, FileHandleRecord>();
 	
 	@Override
-	public FileHandleRecord getRecord(String pattern, String auditTime) {
+	public FileHandleRecord getRecord(AuditRole role, String pattern, String auditTime) {
 		String key = pattern + auditTime;
 		return recordMap.get(key);
 	}

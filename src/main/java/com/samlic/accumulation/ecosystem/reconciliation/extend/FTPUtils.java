@@ -5,6 +5,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -144,9 +146,10 @@ public class FTPUtils {
 	 * 下载FTP服务器文件至本地<br/>
 	 * @throws IOException 
 	 */
-	public void retrieveFile(String path,String suffix) throws IOException {
+	public File[] retrieveFiles(String path,String suffix) throws IOException {
 		OutputStream out = null;
 		InputStream is = null; 	
+		List<File> fileList = new ArrayList<File>();
 		try {
 			boolean result = false;
 			// 连接至服务器
@@ -154,12 +157,13 @@ public class FTPUtils {
 			// 判断服务器是否连接成功
 			if (result) {
 				// 获取文件输入流
-				FTPFile[] ff = ftpClient.listFiles();
+				FTPFile[] ff = ftpClient.listFiles();				
 				for(FTPFile file : ff){
 					String fileName = file.getName();
+					File localFile =  new File(path+fileName);
 					if(fileName.endsWith(suffix)){						
 						is = ftpClient.retrieveFileStream(fileName);
-					    out = new FileOutputStream(new File(path+fileName));
+					    out = new FileOutputStream(localFile);
 						int len = 0;
 						byte[] b = new byte[1024];
 						while((len=is.read(b))!=-1){
@@ -168,9 +172,43 @@ public class FTPUtils {
 						out.close();						
 					
 						ftpClient.deleteFile(fileName);
+						fileList.add(localFile);
 					}
-				}
+				}		
 			}		
+			
+			return fileList.toArray(new File[0]);
+		} finally {
+			IOUtils.closeQuietly(is);
+			IOUtils.closeQuietly(out);
+			// 登出服务器并断开连接
+			logout();
+		}
+	}
+	
+	public File retrieveFile(String path, String fileName) throws IOException {
+		OutputStream out = null;
+		InputStream is = null; 	
+		File file = new File(path+fileName);
+		try {
+			boolean result = false;
+			// 连接至服务器
+			result = connectToTheServer();
+			// 判断服务器是否连接成功
+			if (result) {									
+				is = ftpClient.retrieveFileStream(fileName);
+			    out = new FileOutputStream(file);
+				int len = 0;
+				byte[] b = new byte[1024];
+				while((len=is.read(b))!=-1){
+					out.write(b, 0, len);
+				}						
+				out.close();						
+			
+				ftpClient.deleteFile(fileName);					
+			}
+			
+			return file;
 		} finally {
 			IOUtils.closeQuietly(is);
 			IOUtils.closeQuietly(out);

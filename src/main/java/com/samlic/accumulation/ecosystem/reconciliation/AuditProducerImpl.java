@@ -38,12 +38,12 @@ class AuditProducerImpl implements AuditProducer {
 	@Override
 	public void produce(String auditTime) {
 		auditFileBuilder.getPeriod().checkAuditTime(auditTime);
-		FileHandleRecord record = recorder.getRecord(auditFileBuilder.getFileNamePattern(), auditTime);
-		if(record != null && STATUS_SUCCESS.equals(record.getStatus())) {
+		FileHandleRecord record = recorder.getRecord(AuditRole.Producer, auditFileBuilder.getFileNamePattern(), auditTime);
+		if(record != null && STATUS_SUCCESS == record.getStatus()) {
 			return;
 		}
 		
-		if(record == null || STATUS_MAKE_FILE_FAILED.equals(record.getStatus())) {
+		if(record == null || STATUS_MAKE_FILE_FAILED == record.getStatus()) {
 			if(record == null) {
 				SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
 				record = new FileHandleRecord();		
@@ -52,7 +52,7 @@ class AuditProducerImpl implements AuditProducer {
 				record.setPattern(auditFileBuilder.getFileNamePattern());
 				record.setStatus(STATUS_MAKE_FILE_FAILED);
 				record.setTotalLines(auditFileBuilder.getTotalSize());
-				record.setCreateTime(format.format(new Date()));
+				record.setFileCreateTime(format.format(new Date()));
 				recorder.save(record);
 			} 
 
@@ -65,7 +65,7 @@ class AuditProducerImpl implements AuditProducer {
 			auditFileBuilder.upload();
 			record.setStatus(STATUS_SUCCESS);
 			recorder.update(record);			
-		} else if(STATUS_UPLOAD_FILE_FAILED.equals(record.getStatus())) {
+		} else if(STATUS_UPLOAD_FILE_FAILED == record.getStatus()) {
 			try {
 				auditFileBuilder.getUploader().upload(new File(record.getFilePath()));
 				record.setStatus(STATUS_SUCCESS);

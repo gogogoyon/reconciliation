@@ -5,8 +5,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Iterator;
 
 import org.apache.commons.io.IOUtils;
@@ -25,15 +23,21 @@ import org.apache.commons.io.IOUtils;
  * @author yuanpeng
  *
  */
-class AuditFileBuilder extends AuditComponent<AuditFileBuilder> {
+public class AuditFileBuilder extends AuditComponent<AuditFileBuilder> {
 	
 	private Iterator<AuditIterator> data;
 	private Uploader uploader;
 	private File file;
 	private int totalSize;
 	private String auditTime;
-	protected AuditPeriod period = AuditPeriod.Month;
+	protected AuditPeriod period;
 	protected String fileNamePattern;
+	private ContentWriter contentWriter;
+	
+	public AuditFileBuilder() {
+		period = AuditPeriod.Month;
+		contentWriter = new DefaultContentWriter();
+	}
 	
 	public AuditPeriod getPeriod() {
 		return period;
@@ -86,6 +90,11 @@ class AuditFileBuilder extends AuditComponent<AuditFileBuilder> {
 	public AuditFileBuilder content(Iterator<AuditIterator> data, int totalSize) {
 		this.data = data;
 		this.totalSize = totalSize;
+		return this;
+	}
+	
+	public AuditFileBuilder contentWriter(ContentWriter contentWriter) {
+		this.contentWriter = contentWriter;
 		return this;
 	}
 	
@@ -187,28 +196,6 @@ class AuditFileBuilder extends AuditComponent<AuditFileBuilder> {
 			auditTime = period.getAuditTimeStr();
 		}
 		
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-		StringBuilder firstLine =  new StringBuilder();
-		firstLine.append(auditTime).append(delimiter)
-			.append(this.totalSize).append(delimiter)
-			.append(dateFormat.format(new Date())).append(lineSeparator);
-		bos.write(firstLine.toString().getBytes(charset));
-		int count = 0;
-		while(data.hasNext()) {
-			AuditIterator auditIterator = data.next();
-			while(auditIterator.hasNext()) {
-				bos.write(auditIterator.next().getBytes(charset));
-				if(auditIterator.hasNext()) {
-					bos.write(delimiter.getBytes(charset));
-				}
-			}
-			bos.write(lineSeparator.getBytes(charset));
-			
-			count ++;
-		}
-		
-		if(count != this.totalSize) {
-			throw new IllegalStateException("Size of content is incorrect.");
-		}
+		contentWriter.writeContent(bos, auditTime, delimiter, lineSeparator, charset, totalSize, data);
 	}
 }

@@ -1,6 +1,7 @@
 package com.samlic.accumulation.ecosystem.reconciliation;
 
 public abstract class BaseConsumeItem {
+	private Long detailId;
 	//对账主记录标识
 	private Long auditId;
 	//行号
@@ -9,6 +10,13 @@ public abstract class BaseConsumeItem {
 	private String auditStatus;
 	//对账描述
 	private String auditDesc;
+	
+	public Long getDetailId() {
+		return detailId;
+	}
+	public void setDetailId(Long detailId) {
+		this.detailId = detailId;
+	}
 	
 	public int getLineNumber() {
 		return lineNumber;

@@ -25,10 +25,12 @@ import org.slf4j.LoggerFactory;
  * @author yuanpeng
  *
  */
-class AuditFileResolver extends AuditComponent<AuditFileResolver> {
+public class AuditFileResolver extends AuditComponent<AuditFileResolver> {
 	private File file;
 	private FileDataHandler dataHandler;	
 	private int columnSize = 0;
+	private Downloader downloader;
+	private String suffix;
 	
 	private final static int HEADER_SIZE = 3;
 	
@@ -44,6 +46,16 @@ class AuditFileResolver extends AuditComponent<AuditFileResolver> {
 		return this;
 	}
 	
+	public AuditFileResolver downloader(Downloader downloader) {
+		this.downloader = downloader;
+		return this;
+	}
+	
+	public AuditFileResolver suffix(String suffix) {
+		this.suffix = suffix;
+		return this;
+	}
+	
 	public AuditFileResolver file(File file) {
 		if(file == null || !file.canRead()) {
 			throw new IllegalArgumentException("File is null or can not be read.");
@@ -51,6 +63,16 @@ class AuditFileResolver extends AuditComponent<AuditFileResolver> {
 		
 		this.file = file;
 		return this;
+	}
+	
+	public String getFileNamePattern(File sourceFile) {		
+		String name = sourceFile.getName();
+		int index = name.lastIndexOf(fileNameSeparator);
+		if(index < 0) {
+			throw new IllegalStateException("File name must contains separator " + fileNameSeparator + "."); 
+		}		
+		
+		return name.substring(0, index);
 	}
 	
 	public String getFileNamePattern() {
@@ -68,6 +90,27 @@ class AuditFileResolver extends AuditComponent<AuditFileResolver> {
 	}
 	
 	public void resolver() {
+		if(file != null) {
+			resolver(file);
+		}
+		
+		if(downloader != null) {
+			if(suffix == null) {
+				throw new IllegalStateException("File suffix must be set."); 
+			}
+			
+			try {
+			File[] files = downloader.downloadFiles(suffix);
+				for(File downloadFile : files) {				
+					resolver(downloadFile);					
+				}
+			} catch (IOException e) {
+				throw new DownloadException("Failed to download file.", e); 
+			}	
+		}
+	}
+	
+	private void resolver(File file) {
 		if(file == null) {
 			throw new IllegalStateException("A file must be set first."); 
 		}
@@ -97,7 +140,7 @@ class AuditFileResolver extends AuditComponent<AuditFileResolver> {
 			int count = 0;
 			int totalRow = Integer.parseInt(headers[1]);
 			
-			dataHandler.handleFirstLine(headers);
+			dataHandler.handleFirstLine(file, headers);
 			while((line = br.readLine()) != null) {
 				String[] datas = line.split("\\" + delimiter);
 				if(columnSize != 0 && datas.length != columnSize) {

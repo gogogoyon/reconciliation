@@ -17,18 +17,18 @@ public class FileHandleRecord {
     //文件路径
 	private String filePath;
     //当前周期的生产记录状态
-	private String status;
+	private int status;
 	//总行数
 	private int totalLines;	
 	//文件创建时间
-	private String createTime;
+	private String fileCreateTime;
 
-	public String getCreateTime() {
-		return createTime;
+	public String getFileCreateTime() {
+		return fileCreateTime;
 	}
 
-	public void setCreateTime(String createTime) {
-		this.createTime = createTime;
+	public void setFileCreateTime(String fileCreateTime) {
+		this.fileCreateTime = fileCreateTime;
 	}
 
 	public Long getId() {
@@ -79,15 +79,15 @@ public class FileHandleRecord {
 		this.filePath = filePath;
 	}
 
-	public String getStatus() {
+	public int getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(int status) {
 		this.status = status;
 	}
 	
-	static enum AuditRole {
+	public static enum AuditRole {
 		Producer, Consumer
 	}
 }
