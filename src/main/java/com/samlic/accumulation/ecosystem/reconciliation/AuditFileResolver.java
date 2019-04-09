@@ -36,6 +36,10 @@ public class AuditFileResolver extends AuditComponent<AuditFileResolver> {
 	
 	private static final Logger logger = LoggerFactory.getLogger(AuditFileResolver.class);
 	
+	public AuditFileResolver() {
+		delimiter = "\\|";
+	}
+	
 	public AuditFileResolver columnSize(int columnSize) {
 		this.columnSize = columnSize;
 		return this;
@@ -132,7 +136,7 @@ public class AuditFileResolver extends AuditComponent<AuditFileResolver> {
 				throw new IllegalStateException("File is empty."); 
 			}
 			
-			String[] headers = line.split("\\" + delimiter);
+			String[] headers = line.split(delimiter, HEADER_SIZE);
 			if(headers.length != HEADER_SIZE) {
 				throw new IllegalStateException("Header size error.");
 			}
@@ -142,8 +146,8 @@ public class AuditFileResolver extends AuditComponent<AuditFileResolver> {
 			
 			dataHandler.handleFirstLine(file, headers);
 			while((line = br.readLine()) != null) {
-				String[] datas = line.split("\\" + delimiter);
-				if(columnSize != 0 && datas.length != columnSize) {
+				String[] datas = line.split(delimiter, columnSize);		
+				if(columnSize > 0 && datas.length != columnSize) {
 					throw new IllegalStateException("Data column size error.");
 				}
 				dataHandler.handleContent(datas);
