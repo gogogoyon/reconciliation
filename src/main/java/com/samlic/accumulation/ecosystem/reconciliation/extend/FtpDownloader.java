@@ -2,6 +2,7 @@ package com.samlic.accumulation.ecosystem.reconciliation.extend;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.function.UnaryOperator;
 
 import com.samlic.accumulation.ecosystem.reconciliation.Downloader;
 
@@ -22,19 +23,10 @@ public class FtpDownloader implements Downloader {
 	    this.remotePath = remotePath;
 	    this.localPath = localPath;
 	}
-
-
-	@Override
-	public File download(String fileName) throws IOException {
-		FTPUtils ftpUtils = new FTPUtils(url, port, username, password, remotePath);
-		ftpUtils.retrieveFile(localPath, fileName);
-		return new File(localPath+fileName);
-	}
-
-	@Override
-	public File[] downloadFiles(String suffix) throws IOException {
+	
+	public File[] downloadFiles(UnaryOperator<String[]> selector) throws IOException {
 		FTPUtils ftpUtils = new FTPUtils(url, port, username, password, remotePath);		
-		return ftpUtils.retrieveFiles(localPath, suffix);
+		return ftpUtils.retrieveFiles(localPath, selector);
 	}
 
 }

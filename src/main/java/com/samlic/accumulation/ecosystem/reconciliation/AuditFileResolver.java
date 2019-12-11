@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -29,15 +31,16 @@ public class AuditFileResolver extends AuditComponent<AuditFileResolver> {
 	private File file;
 	private FileDataHandler dataHandler;	
 	private int columnSize = 0;
-	private Downloader downloader;
+	private List<Downloader> downloaderList;
 	private String suffix;
 	
-	private final static int HEADER_SIZE = 3;
+	private static final int HEADER_SIZE = 3;
 	
 	private static final Logger logger = LoggerFactory.getLogger(AuditFileResolver.class);
 	
 	public AuditFileResolver() {
 		delimiter = "\\|";
+		downloaderList = new ArrayList<Downloader>();
 	}
 	
 	public AuditFileResolver columnSize(int columnSize) {
@@ -50,8 +53,8 @@ public class AuditFileResolver extends AuditComponent<AuditFileResolver> {
 		return this;
 	}
 	
-	public AuditFileResolver downloader(Downloader downloader) {
-		this.downloader = downloader;
+	public AuditFileResolver addDownloader(Downloader downloader) {
+		this.downloaderList.add(downloader);
 		return this;
 	}
 	
@@ -98,19 +101,30 @@ public class AuditFileResolver extends AuditComponent<AuditFileResolver> {
 			resolver(file);
 		}
 		
-		if(downloader != null) {
-			if(suffix == null) {
-				throw new IllegalStateException("File suffix must be set."); 
-			}
-			
-			try {
-			File[] files = downloader.downloadFiles(suffix);
-				for(File downloadFile : files) {				
-					resolver(downloadFile);					
+		for(Downloader downloader : downloaderList) {
+			if(downloader != null) {
+				if(suffix == null) {
+					throw new IllegalStateException("File suffix must be set."); 
 				}
-			} catch (IOException e) {
-				throw new DownloadException("Failed to download file.", e); 
-			}	
+				
+				try {
+					File[] files = downloader.downloadFiles(fileNames -> {
+						List<String> fileNameList = new ArrayList<>();
+						for(String fileName : fileNames) {
+							if(fileName.endsWith(suffix)) {
+								fileNameList.add(fileName);
+							}
+						}
+						
+						return fileNameList.toArray(new String[0]);
+					});
+					for(File downloadFile : files) {				
+						resolver(downloadFile);					
+					}
+				} catch (IOException e) {
+					throw new DownloadException("Failed to download file.", e); 
+				}	
+			}
 		}
 	}
 	

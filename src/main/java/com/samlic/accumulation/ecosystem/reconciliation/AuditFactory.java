@@ -130,7 +130,7 @@ public class AuditFactory {
 	 * @return
 	 */
 	public static AuditFileResolver createFileResolver(Downloader downloader, String suffix) {
-		return new AuditFileResolver().downloader(downloader).suffix(suffix);			
+		return new AuditFileResolver().addDownloader(downloader).suffix(suffix);			
 	}
 	
 	/**

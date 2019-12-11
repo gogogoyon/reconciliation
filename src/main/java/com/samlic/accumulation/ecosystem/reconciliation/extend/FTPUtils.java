@@ -1,17 +1,17 @@
 package com.samlic.accumulation.ecosystem.reconciliation.extend;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.UnaryOperator;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ftp.FTPClient;
-import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 
 /**
@@ -149,66 +149,59 @@ public class FTPUtils {
 		return result;
 	}
 
-	private FTPFile[] retrieveFTPFiles(String path, String suffix) throws IOException {
-		List<FTPFile> fileList = new ArrayList<FTPFile>();
+	private String[] retrieveFileNames() throws IOException {
 		try {
 			boolean result = false;
 			// 连接至服务器
 			result = connectToTheServer();
 			// 判断服务器是否连接成功
 			if (result) {
-				// 获取文件输入流
-				FTPFile[] ftpFiles = ftpClient.listFiles();
-				for (FTPFile file : ftpFiles) {
-					String fileName = file.getName();
-					if (fileName.endsWith(suffix)) {
-						fileList.add(file);
-					}
-				}
+				return ftpClient.listNames();
 			}
-
-			return fileList.toArray(new FTPFile[0]);
 		} finally {
 			// 登出服务器并断开连接
 			logout();
 		}
-	}
 
+		return new String[0];
+	}
+	
 	/**
-	 * 下载FTP服务器文件至本地<br/>
-	 * 
+	 * 获取文件
+	 * @param path
+	 * @param selector
+	 * @return
 	 * @throws IOException
 	 */
-	public File[] retrieveFiles(String path, String suffix) throws IOException {
-		List<File> fileList = new ArrayList<File>();
-		FTPFile[] ftpFiles = retrieveFTPFiles(path, suffix);
-		for (FTPFile ftpFile : ftpFiles) {
-			fileList.add(retrieveFile(path, ftpFile.getName()));
+	public File[] retrieveFiles(String savePath, UnaryOperator<String[]> selector) throws IOException {
+		List<File> fileList = new ArrayList<>();
+		String[] fileNames = selector.apply(retrieveFileNames());
+		for (String fileName : fileNames) {			
+			fileList.add(retrieveFile(savePath, fileName));			
 		}
 
 		return fileList.toArray(new File[0]);
 	}
 
-	public File retrieveFile(String path, String fileName) throws IOException {
+	/**
+	 * 获取文件
+	 * @param savePath
+	 * @param fileName
+	 * @return
+	 * @throws IOException
+	 */
+	public File retrieveFile(String savePath, String fileName) throws IOException {
 		OutputStream out = null;
 		InputStream is = null;
-		File file = new File(path + fileName);
+		File file = new File(savePath + fileName);
 		try {
 			boolean result = false;
 			// 连接至服务器
 			result = connectToTheServer();
 			// 判断服务器是否连接成功
 			if (result) {
-				is = ftpClient.retrieveFileStream(fileName);
-				out = new FileOutputStream(file);
-				int len = 0;
-				byte[] b = new byte[1024];
-				while ((len = is.read(b)) != -1) {
-					out.write(b, 0, len);
-				}
-				out.close();
-
-				ftpClient.deleteFile(fileName);
+				is = ftpClient.retrieveFileStream(fileName);				
+				FileUtils.copyInputStreamToFile(is, file);
 			}
 
 			return file;
@@ -325,26 +318,21 @@ public class FTPUtils {
 	 * @return <b>true</b>：操作成功 <br/>
 	 *         <b>false</b>：操作失败
 	 */
-	private boolean logout() {
+	private boolean logout() throws IOException {
 		boolean result = false;
 		if (null != ftpClient) {
 			try {
 				// 登出服务器
 				result = ftpClient.logout();
-			} catch (IOException e) {
-
 			} finally {
 				// 判断连接是否存在
-				if (ftpClient.isConnected()) {
-					try {
-						// 断开连接
-						ftpClient.disconnect();
-					} catch (IOException e) {
-
-					}
+				if (ftpClient.isConnected()) {					
+					// 断开连接
+					ftpClient.disconnect();					
 				}
 			}
 		}
+		
 		return result;
 	}
 }

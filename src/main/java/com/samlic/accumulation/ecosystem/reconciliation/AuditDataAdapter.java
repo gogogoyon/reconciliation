@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 /**
  * AuditIterator适配器
@@ -91,7 +92,7 @@ public class AuditDataAdapter {
 	 */
 	public static Iterator<AuditIterator> adapt(List<Map<String, Object>> dataList, final List<String> keyList,
 			final Map<Class<?>, StringFormater> formatMap) {
-		List<AuditIterator> list = new ArrayList<AuditIterator>();
+		List<AuditIterator> list = new ArrayList<>();
 		
 		if(dataList != null) {
 			for(final Map<String, Object> data : dataList) {
@@ -134,7 +135,7 @@ public class AuditDataAdapter {
 	 */
 	public static Iterator<AuditIterator> adapt(List<Iteratorable> dataList,
 			final Map<Class<?>, StringFormater> formatMap) {
-		List<AuditIterator> list = new ArrayList<AuditIterator>();
+		List<AuditIterator> list = new ArrayList<>();
 		
 		if(dataList != null) {
 			for(final Iteratorable data : dataList) {
@@ -167,6 +168,10 @@ public class AuditDataAdapter {
 
 			@Override
 			public String next() {
+				if(!hasNext()) {
+					throw new NoSuchElementException();
+				}
+				
 				String name = keyList.get(i++);				
 				return objectToString(data.getValue(name), formatMap);
 			}
