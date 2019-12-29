@@ -81,5 +81,5 @@
     AuditFileResolver auditFileResolver = AuditFactory.createFileResolver(file);
     AuditFactory.createConsumer(auditFileResolver, new MyDetailHandler()).consume();
 ```
-### 详细用例代码查看测试类：
-    com.samlic.accumulation.ecosystem.reconciliation.AuditFileTest<br>
+### 详细用例代码查看测试类
+    com.samlic.accumulation.ecosystem.reconciliation.AuditFileTest
