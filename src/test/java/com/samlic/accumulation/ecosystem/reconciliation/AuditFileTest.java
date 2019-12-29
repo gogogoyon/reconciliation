@@ -11,12 +11,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 public class AuditFileTest {
 
 	/**
-	 * 测试Map类型的数据源
+	 ** 测试Map类型的数据源
 	 */
 	@Test
 	public void testMapData() {
@@ -41,18 +42,19 @@ public class AuditFileTest {
 			dataList.add(data);
 		}
 		
-		AuditFileBuilder auditFileBuilder = AuditFactory.createFileBuilder(fileNamePattern, dataList, keyList);
-		
-		AuditFactory.createProducer(auditFileBuilder.period(AuditPeriod.Day)).produce();
-		
+		//根据数据生成对账文件
+		AuditFileBuilder auditFileBuilder = AuditFactory.createFileBuilder(fileNamePattern, dataList, keyList);		
+		AuditFactory.createProducer(auditFileBuilder.period(AuditPeriod.Day)).produce();		
 		File file = auditFileBuilder.getResult();
-		System.out.println(file.getAbsolutePath());
+		Assert.assertNotNull(file);
+		
+		//解析处理对账文件
 		AuditFileResolver auditFileResolver = AuditFactory.createFileResolver(file);
 		AuditFactory.createConsumer(auditFileResolver, new MyDetailHandler()).consume();
 	}
 	
 	/**
-	 * 测试Iteratorable类型的数据源
+	 ** 测试Iteratorable类型的数据源
 	 */
 	@Test
 	public void testIteratorableData() {
@@ -92,16 +94,22 @@ public class AuditFileTest {
 			
 		});
 		
-		AuditFileBuilder auditFileBuilder = AuditFactory.createFileBuilder(fileNamePattern, dataList, formatMap);
-		
-		AuditFactory.createProducer(auditFileBuilder.period(AuditPeriod.Day)).produce();
-		
+		//根据数据生成对账文件
+		AuditFileBuilder auditFileBuilder = AuditFactory.createFileBuilder(fileNamePattern, dataList, formatMap);		
+		AuditFactory.createProducer(auditFileBuilder.period(AuditPeriod.Day)).produce();	
 		File file = auditFileBuilder.getResult();
-		System.out.println(file.getAbsolutePath());
+		Assert.assertNotNull(file);
+		
+		//解析处理对账文件		
 		AuditFileResolver auditFileResolver = AuditFactory.createFileResolver(file);
 		AuditFactory.createConsumer(auditFileResolver, new MyDetailHandler()).consume();
 	}
 	
+	/**
+	 ** 生成对账文件时使用的数据实体类 
+	 * @author yuanpeng
+	 *
+	 */
 	static class TestEntity extends IteratorableEntityBean {
 		private String orderId;
 		private BigDecimal cost;
@@ -173,7 +181,7 @@ public class AuditFileTest {
 	}
 	
 	/**
-	 * 数据实体类
+	 ** 消费对账文件时使用的数据实体类
 	 * @author yuanpeng
 	 *
 	 */
@@ -229,7 +237,7 @@ public class AuditFileTest {
 	}
 	
 	/**
-	 * 单数据项处理类
+	 ** 单条数据记录处理类
 	 * @author yuanpeng
 	 *
 	 */

@@ -7,7 +7,7 @@
 - AuditConsumer: 对账逻辑消费者<br>
 
 ## 代码示例
-### 以Map结构为数据源的示例
+### 以Map结构数据为数据源的示例
 ```java
 	String fileNamePattern = "order_detail_map.dat";
 	List<String> keyList = new ArrayList<String>();
@@ -29,15 +29,17 @@
         data.put("paySequence", "fdairwfe94923" + i);
         dataList.add(data);
     }
-		
+	
+    //根据数据生成对账文件	
     AuditFileBuilder auditFileBuilder = AuditFactory.createFileBuilder(fileNamePattern, dataList, keyList);
     AuditFactory.createProducer(auditFileBuilder.period(AuditPeriod.Day)).produce();
     File file = auditFileBuilder.getResult();
     
+	//解析处理对账文件
     AuditFileResolver auditFileResolver = AuditFactory.createFileResolver(file);
     AuditFactory.createConsumer(auditFileResolver, new MyDetailHandler()).consume();
 ```
-### 以实体类为数据源的示例
+### 以Iteratorable类数据为数据源的示例
 ```java
     String fileNamePattern = "order_detail_iteratorable.dat";		
     List<Iteratorable> dataList = new ArrayList<Iteratorable>();
@@ -69,11 +71,15 @@
             return format.format(data);
         }
     });
-		
+	
+	//根据数据生成对账文件
     AuditFileBuilder auditFileBuilder = AuditFactory.createFileBuilder(fileNamePattern, dataList, formatMap);
     AuditFactory.createProducer(auditFileBuilder.period(AuditPeriod.Day)).produce();
     File file = auditFileBuilder.getResult();
     
+	//解析处理对账文件
     AuditFileResolver auditFileResolver = AuditFactory.createFileResolver(file);
     AuditFactory.createConsumer(auditFileResolver, new MyDetailHandler()).consume();
 ```
+### 详细用例代码查看测试类：
+    com.samlic.accumulation.ecosystem.reconciliation.AuditFileTest<br>
