@@ -8,15 +8,18 @@ import java.io.OutputStream;
 import java.util.Iterator;
 
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 对账文件生成组件
  * 文件格式定义
- * 文件名称在变量fileNamePattern中定义，如“vip_present_detail_yyyymm.dat”
- *
+ * 文件名称在变量fileNamePattern中定义，如“vip_present_detail.dat”,
+ * 当按天对账时，生成的文件名为vip_present_detail{fileNameSeparator}yyyyMMdd.dat
+ * 当按月对账时，生成的文件名为vip_present_detail{fileNameSeparator}yyyyMM.dat
  * 文件内容格式：
  * 文件头(第1行):
- * 对账周期period|文件记录条数|对账文件生成时间lineSeparator
+ * 对账周期period{delimiter}文件记录条数{delimiter}对账文件生成时间{lineSeparator}
  * 对账记录明细(第2行开始为记录明细数据),字段将以delimiter分割，换行符号lineSeparator结束，字段定义及顺序按
  * AuditIterator返回数据的顺序
  *
@@ -24,6 +27,8 @@ import org.apache.commons.io.IOUtils;
  *
  */
 public class AuditFileBuilder extends AuditComponent<AuditFileBuilder> {
+	
+	private static final Logger logger = LoggerFactory.getLogger(AuditFileBuilder.class);
 	
 	private Iterator<AuditIterator> data;
 	private Uploader uploader;
@@ -135,6 +140,12 @@ public class AuditFileBuilder extends AuditComponent<AuditFileBuilder> {
 		}
 		
 		File resultFile = makeFile();
+		this.file = resultFile;
+		if(resultFile.exists()) {
+			logger.info("File exists: {}", resultFile);
+			return;
+		}
+		
 		OutputStream os = null;
 		BufferedOutputStream bos = null;
 		try {
@@ -142,8 +153,6 @@ public class AuditFileBuilder extends AuditComponent<AuditFileBuilder> {
 			bos = new BufferedOutputStream(os);
 			writeContent(bos);
 			bos.flush();
-			
-			this.file = resultFile;
 		} catch (IOException e) {
 			throw new IllegalStateException("Failed to build file.", e);
 		} finally {
@@ -178,15 +187,7 @@ public class AuditFileBuilder extends AuditComponent<AuditFileBuilder> {
 			auditTime = period.getAuditTimeStr();
 		}
 		
-		String fileName = this.fileNamePattern;		
-		int index = this.fileNamePattern.lastIndexOf(".");
-		if(index > -1) {
-			String pattern = fileName.substring(0, index);	
-			String suffix = fileName.substring(index, fileName.length());
-			fileName = pattern + fileNameSeparator + auditTime + suffix;
-		} else {
-			fileName += fileNameSeparator + auditTime;
-		}
+		String fileName = new AuditFileNameConstructor(fileNamePattern, fileNameSeparator, auditTime).getFileName();
 		
 		return new File(filePath + fileName);
 	}

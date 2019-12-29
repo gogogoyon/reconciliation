@@ -15,12 +15,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * 对账文件分解器
- * 文件格式定义
- * 文件名称在变量fileNamePattern中定义，如“vip_present_detail_yyyymm.dat”
- *
  * 文件内容格式：
  * 文件头(第1行):
- * 对账周期period|文件记录条数|对账文件生成时间lineSeparator
+ * 对账周期period{delimiter}文件记录条数{delimiter}对账文件生成时间lineSeparator
  * 对账记录明细(第2行开始为记录明细数据),字段将以delimiter分割，换行符号lineSeparator结束，字段定义及顺序按
  * AuditIterator返回数据的顺序
  *
@@ -28,13 +25,15 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class AuditFileResolver extends AuditComponent<AuditFileResolver> {
-	private File file;
+	private File dataFile;
 	private FileDataHandler dataHandler;	
 	private int columnSize = 0;
 	private List<Downloader> downloaderList;
 	private String suffix;
 	
 	private static final int HEADER_SIZE = 3;
+	private static final String SUCCESS_BAKE_DIR = "completed/";
+	private static final String FAIL_BAKE_DIR = "failed/";
 	
 	private static final Logger logger = LoggerFactory.getLogger(AuditFileResolver.class);
 	
@@ -68,7 +67,7 @@ public class AuditFileResolver extends AuditComponent<AuditFileResolver> {
 			throw new IllegalArgumentException("File is null or can not be read.");
 		}
 		
-		this.file = file;
+		this.dataFile = file;
 		return this;
 	}
 	
@@ -83,54 +82,53 @@ public class AuditFileResolver extends AuditComponent<AuditFileResolver> {
 	}
 	
 	public String getFileNamePattern() {
-		if(file == null) {
+		if(dataFile == null) {
 			throw new IllegalStateException("A file must be set first."); 
 		}
 		
-		String name = file.getName();
-		int index = name.lastIndexOf(fileNameSeparator);
-		if(index < 0) {
-			throw new IllegalStateException("File name must contains separator " + fileNameSeparator + "."); 
-		}		
-		
-		return name.substring(0, index);
+		return getFileNamePattern(dataFile);
 	}
 	
-	public void resolver() {
-		if(file != null) {
-			resolver(file);
+	public void resolve() {
+		if(suffix == null) {
+			throw new IllegalStateException("File suffix must be set."); 
+		}
+		
+		if(dataFile != null) {
+			resolve(dataFile);
 		}
 		
 		for(Downloader downloader : downloaderList) {
 			if(downloader != null) {
-				if(suffix == null) {
-					throw new IllegalStateException("File suffix must be set."); 
-				}
-				
 				try {
 					File[] files = downloader.downloadFiles(fileNames -> {
 						List<String> fileNameList = new ArrayList<>();
 						for(String fileName : fileNames) {
-							if(fileName.endsWith(suffix)) {
+							File file = new File(filePath + SUCCESS_BAKE_DIR + fileName);
+							if(fileName.endsWith(suffix)
+									&& !file.exists()) {
 								fileNameList.add(fileName);
 							}
 						}
 						
 						return fileNameList.toArray(new String[0]);
 					});
-					for(File downloadFile : files) {				
-						resolver(downloadFile);					
+					
+					for(File downloadFile : files) {	
+						logger.info("Begin to resolve file: {}", downloadFile);
+						resolve(downloadFile);	
+						logger.info("End to resolve file: {}", downloadFile);
 					}
-				} catch (IOException e) {
-					throw new DownloadException("Failed to download file.", e); 
+				} catch (Exception e) {
+					logger.error("Failed to download file.", e); 
 				}	
 			}
 		}
 	}
 	
-	private void resolver(File file) {
+	private void resolve(File file) {
 		if(file == null) {
-			throw new IllegalStateException("A file must be set first."); 
+			return;
 		}
 		
 		if(dataHandler == null) {
@@ -174,6 +172,8 @@ public class AuditFileResolver extends AuditComponent<AuditFileResolver> {
 			
 			dataHandler.handleEnd();			
 		} catch (Exception e) {
+			logger.error("File: {}", file);
+			logger.error("Failed to resolve file.", e);			
 			exception = e;
 		} finally {
 			IOUtils.closeQuietly(br);
@@ -181,22 +181,24 @@ public class AuditFileResolver extends AuditComponent<AuditFileResolver> {
 			IOUtils.closeQuietly(fis);
 		}
 		
+		handleAfterResolver(file, exception);
+	}
+	
+	private void handleAfterResolver(File file, Exception exception) {
 		if(exception == null) {
 			try {
-				FileUtils.moveFileToDirectory(file, new File(filePath + "completed/"), true);
+				FileUtils.moveFileToDirectory(file, new File(filePath + SUCCESS_BAKE_DIR), true);
 			} catch (IOException e) {
 				logger.error("Failed to move file to completed: " + file.getAbsolutePath(), e);
 			}
 		} else {	
 			if(delete) {
 				try {
-					FileUtils.moveFileToDirectory(file, new File(filePath + "failed/"), true);
+					FileUtils.moveFileToDirectory(file, new File(filePath + FAIL_BAKE_DIR), true);
 				} catch (IOException e) {
 					logger.error("Failed to move file to failed: " + file.getAbsolutePath(), e);
 				}
 			}
-			
-			throw new IllegalStateException("Failed to resolve file: " + file.getAbsolutePath(), exception); 
 		}
 	}
 }

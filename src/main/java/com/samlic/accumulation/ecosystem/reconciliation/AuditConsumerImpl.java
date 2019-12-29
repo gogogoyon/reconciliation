@@ -39,7 +39,7 @@ class AuditConsumerImpl<T extends BaseConsumeItem> implements AuditConsumer {
 
 	@Override
 	public void consume() {		
-		resolver.dataHandler(head).resolver();
+		resolver.dataHandler(head).resolve();
 	}
 	
 	class DataRecordHandler implements FileDataHandler {

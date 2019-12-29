@@ -28,16 +28,13 @@ public class FtpUploader implements Uploader {
 	
 	@Override
 	public void upload(File file) throws IOException {
-		FTPUtils ftpUtils = new FTPUtils(url, port, username, password, remotePath);
+		FtpHelper ftpHelper = new FtpHelper(url, port, username, password, remotePath);
 		FileInputStream fis = null;
 		BufferedInputStream bis = null;
 		try {
 			fis = new FileInputStream(file);
-			bis = new BufferedInputStream(fis);
-			
-			if(!ftpUtils.storeFile(file.getName(), bis)) {
-				throw new IOException("Failed to upload file.");
-			}
+			bis = new BufferedInputStream(fis);			
+			ftpHelper.storeFile(file.getName(), bis);
 		} finally {
 			IOUtils.closeQuietly(bis);
 			IOUtils.closeQuietly(fis);
