@@ -9,9 +9,9 @@
 ## 代码示例
 ### 以Map结构数据为数据源的示例
 ```java
-	String fileNamePattern = "order_detail_map.dat";
-	List<String> keyList = new ArrayList<String>();
-	keyList.add("orderId");
+    String fileNamePattern = "order_detail_map.dat";
+    List<String> keyList = new ArrayList<String>();
+    keyList.add("orderId");
     keyList.add("cost");
     keyList.add("status");
     keyList.add("payTime");
