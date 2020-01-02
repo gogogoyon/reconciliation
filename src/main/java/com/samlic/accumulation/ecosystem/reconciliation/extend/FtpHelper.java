@@ -71,8 +71,7 @@ public class FtpHelper {
 
 	public void makeDirectory(String remotePath, String pathname) throws IOException {
 		try {			
-			connectToTheServer();			
-			ftpClient.changeWorkingDirectory(remotePath);
+			connectToTheServer();
 			if (!ftpClient.changeWorkingDirectory(remotePath)) {
 				throw new IOException(
 						"Failed to change directory to " + remotePath + ". ReplyCode = " + ftpClient.getReplyCode());
@@ -110,7 +109,13 @@ public class FtpHelper {
 	public String[] retrieveFileNames() throws IOException {
 		try {
 			connectToTheServer();
-			return ftpClient.listNames();
+			String[] remoteNames = ftpClient.listNames();
+			if(remoteNames == null) {
+				throw new IOException(
+						"Failed to list names of directory " + remotePath + ". ReplyCode = " + ftpClient.getReplyCode());
+			}
+			
+			return remoteNames;
 		} finally {			
 			disconnect();
 		}
@@ -129,6 +134,11 @@ public class FtpHelper {
 		try {
 			connectToTheServer();
 			is = ftpClient.retrieveFileStream(fileName);
+			if(is == null) {
+				throw new IOException(
+						"Failed to retrive file " + fileName + ". ReplyCode = " + ftpClient.getReplyCode());
+			}
+			
 			FileUtils.copyInputStreamToFile(is, file);
 			return file;
 		} finally {
@@ -156,7 +166,12 @@ public class FtpHelper {
 	public boolean checkFile(String fileName) throws IOException {
 		try {
 			connectToTheServer();
-			String[] remoteNames = ftpClient.listNames();			
+			String[] remoteNames = ftpClient.listNames();	
+			if(remoteNames == null) {
+				throw new IOException(
+						"Failed to list names of directory " + remotePath + ". ReplyCode = " + ftpClient.getReplyCode());
+			}
+			
 			for (String remoteName : remoteNames) {
 				if (fileName.equals(remoteName)) {
 					return true;
