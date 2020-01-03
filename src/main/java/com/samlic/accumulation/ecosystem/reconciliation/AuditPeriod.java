@@ -24,7 +24,7 @@ public enum AuditPeriod {
 	
 	/**
 	 * 获取当前周期的审核时间
-	 * @return
+	 * @return 对账时间字符串
 	 */
 	public String getAuditTimeStr() {
 		SimpleDateFormat dateFormat = new SimpleDateFormat(format);
@@ -38,6 +38,10 @@ public enum AuditPeriod {
 		return dateFormat.format(rightNow.getTime());
 	}
 	
+	/**
+	 * 检查对账时间字符串格式
+	 * @param auditTime 对账时间字符串
+	 */
 	public void checkAuditTime(String auditTime) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat(format);
 		try {

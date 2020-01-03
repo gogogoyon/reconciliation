@@ -4,20 +4,20 @@ package com.samlic.accumulation.ecosystem.reconciliation;
  * 明细数据解析器
  * @author yuanpeng
  *
- * @param <T>
+ * @param <T> 明细记录对象类型
  */
 public interface DetailHandler<T extends BaseConsumeItem> {
 	/**
 	 * 解析行数据
-	 * @param lineItems
+	 * @param lineItems 明细数据
 	 * @return 返回数据实体类实例
 	 */
 	T parse(String[] lineItems);
 	
 	/**
 	 * 执行个性化对账逻辑
-	 * @param record
-	 * @param datail
+	 * @param record 文件处理记录
+	 * @param datail 明细记录
 	 * @return 成功，失败
 	 */
 	Result handle(FileHandleRecord record, T datail);

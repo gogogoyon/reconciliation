@@ -8,8 +8,8 @@ package com.samlic.accumulation.ecosystem.reconciliation;
 public interface StringFormater {
 	/**
 	 * 将对象格式化成字符串
-	 * @param data
-	 * @return
+	 * @param data 数据对象
+	 * @return 结果字符串
 	 */
 	String format(Object data);
 }

@@ -11,7 +11,8 @@ public interface AuditConsumer {
 	
 	/**
 	 * 添加文件处理器
-	 * @param handler
+	 * @param handler 文件数据处理器
+	 * @return 当前对象
 	 */
 	AuditConsumer addFileDataHandler(FileDataHandler handler);
 }

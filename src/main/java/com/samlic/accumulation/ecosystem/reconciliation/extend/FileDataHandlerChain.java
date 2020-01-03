@@ -42,8 +42,8 @@ public class FileDataHandlerChain implements FileDataHandler {
 	
 	/**
 	 * 追加处理器
-	 * @param handler
-	 * @return
+	 * @param handler 文件数据处理器
+	 * @return 当前对象
 	 */
 	public FileDataHandlerChain addHandler(FileDataHandler handler) {
 		if(this.next != null) {

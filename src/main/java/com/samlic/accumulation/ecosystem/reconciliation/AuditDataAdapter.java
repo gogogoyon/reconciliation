@@ -17,10 +17,9 @@ public class AuditDataAdapter {
 	
 	/**
 	 * 适配分页获取数据
-	 * @param dataFetcher
-	 * @param keyList
-	 * @param formatMap
-	 * @return
+	 * @param dataFetcher 数据提取器，作为生成对账文件的数据源
+	 * @param keyList 迭代数据的Key列表
+	 * @return 返回适配后的对账迭代器
 	 */
 	public static Iterator<AuditIterator> adapt(final DataFetcher dataFetcher, final List<String> keyList) {
 		return adapt(dataFetcher, keyList, null);
@@ -28,10 +27,10 @@ public class AuditDataAdapter {
 	
 	/**
 	 * 适配分页获取数据
-	 * @param dataFetcher
-	 * @param keyList
-	 * @param formatMap
-	 * @return
+	 * @param dataFetcher 数据提取器，作为生成对账文件的数据源
+	 * @param keyList 迭代数据的Key列表
+	 * @param formatMap 提供Object格式化类
+	 * @return 返回适配后的对账迭代器
 	 */
 	public static Iterator<AuditIterator> adapt(final DataFetcher dataFetcher, final List<String> keyList,
 			final Map<Class<?>, StringFormater> formatMap) {
@@ -118,8 +117,7 @@ public class AuditDataAdapter {
 	
 	/**
 	 * 适配Iteratorable列表数据
-	 * @param data  Iteratorable列表数据
-	 * @param keyList 迭代数据的Key列表
+	 * @param dataList  Iteratorable列表数据
 	 * @return 返回Map数据的对账迭代器
 	 */
 	public static Iterator<AuditIterator> adapt(List<Iteratorable> dataList) {		
@@ -128,8 +126,7 @@ public class AuditDataAdapter {
 	
 	/**
 	 * 适配Iteratorable列表数据
-	 * @param data  Iteratorable列表数据
-	 * @param keyList 迭代数据的Key列表
+	 * @param dataList  Iteratorable列表数据
 	 * @param formatMap 提供Object格式化类
 	 * @return 返回Map数据的对账迭代器
 	 */
@@ -150,7 +147,6 @@ public class AuditDataAdapter {
 	/**
 	 * 适配Iteratorable数据
 	 * @param data  Iteratorable形式的数据
-	 * @param keyList 迭代数据的Key列表
 	 * @param formatMap 提供Object格式化类
 	 * @return 返回Map数据的对账迭代器
 	 */

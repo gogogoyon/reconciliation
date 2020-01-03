@@ -14,19 +14,20 @@ public class FtpHelper {
 
 	private FTPClient ftpClient;
 
-	private String url; // 服务器地址
-	private String port; // 服务器端口
-	private String username; // 用户登录名
-	private String password; // 用户登录密码
-	private String remotePath; // 文件保存路径
+	private String url; 
+	private String port; 
+	private String username; 
+	private String password; 
+	private String remotePath; 
 
 	/**
 	 * 初始化FtpHelper
 	 * 
-	 * @param url
-	 * @param port
-	 * @param username
-	 * @param remotePath
+	 * @param url  服务器地址
+	 * @param port 服务器端口
+	 * @param username  用户名
+	 * @param password 密码
+	 * @param remotePath 远程文件路径
 	 */
 	public FtpHelper(String url, String port, String username, String password, String remotePath) {
 		this.url = url;
@@ -123,10 +124,10 @@ public class FtpHelper {
 
 	/**
 	 * 获取文件
-	 * @param savePath
-	 * @param fileName
-	 * @return
-	 * @throws IOException
+	 * @param savePath 本地保存路径
+	 * @param fileName 文件名称
+	 * @return 文件对象
+	 * @throws IOException 可能的IO异常
 	 */
 	public File retrieveFile(String savePath, String fileName) throws IOException {		
 		InputStream is = null;

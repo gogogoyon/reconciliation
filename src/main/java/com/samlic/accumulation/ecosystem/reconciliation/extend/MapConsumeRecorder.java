@@ -12,10 +12,10 @@ import com.samlic.accumulation.ecosystem.reconciliation.ConsumeRecorder;
  * 对账文件数据消费记录类
  * @author yuanpeng
  *
- * @param <T>
+ * @param <T> 明细记录对象类型
  */
 public class MapConsumeRecorder<T extends BaseConsumeItem> extends MapFileHandleRecorder implements ConsumeRecorder<T> {
-	private Map<Long, Queue<T>> recordMap = new HashMap<Long, Queue<T>>();
+	private Map<Long, Queue<T>> recordMap = new HashMap<>();
 	
 	@Override
 	public synchronized T getLatestItem(Long auditId) {
@@ -32,7 +32,7 @@ public class MapConsumeRecorder<T extends BaseConsumeItem> extends MapFileHandle
 		if(recordMap.containsKey(record.getAuditId())) {
 			queue = recordMap.get(record.getAuditId());				
 		} else {
-			queue = new LinkedList<T>();
+			queue = new LinkedList<>();
 			recordMap.put(record.getAuditId(), queue);
 		}
 		

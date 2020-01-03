@@ -10,12 +10,13 @@ import java.io.File;
 public interface FileDataHandler {
 	/**
 	 * 处理第一行
-	 * @param lineItems
+	 * @param file 数据文件
+	 * @param lineItems 第一行数据
 	 */
 	void handleFirstLine(File file, String[] lineItems);
 	/**
 	 * 处理文件内容
-	 * @param lineItems
+	 * @param lineItems 明细数据
 	 */
 	void handleContent(String[] lineItems);	
 	/**

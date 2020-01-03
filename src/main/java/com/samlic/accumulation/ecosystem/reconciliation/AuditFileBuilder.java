@@ -60,6 +60,11 @@ public class AuditFileBuilder extends AuditComponent<AuditFileBuilder> {
 		return uploader;
 	}
 	
+	/**
+	 * 设置对账时间字符串
+	 * @param auditTime 对账时间字符串
+	 * @return 当前对象
+	 */
 	public AuditFileBuilder auditTime(String auditTime) {
 		this.auditTime = auditTime;
 		return this;
@@ -67,8 +72,8 @@ public class AuditFileBuilder extends AuditComponent<AuditFileBuilder> {
 	
 	/**
 	 * 设置对账周期
-	 * @param period
-	 * @return
+	 * @param period 对账周期
+	 * @return 当前对象
 	 */
 	public AuditFileBuilder period(AuditPeriod period) {
 		this.period = period;
@@ -79,8 +84,8 @@ public class AuditFileBuilder extends AuditComponent<AuditFileBuilder> {
 	 * 设置文件名模式，由文件名称和时间格式组成，以下划线分隔
 	 * Set pattern of file name compose of name and time format, separate with underline. 
 	 * Example: vip_present_detail_yyyymm.dat
-	 * @param fileNamePattern
-	 * @return
+	 * @param fileNamePattern 文件名模式
+	 * @return 当前对象
 	 */
 	public AuditFileBuilder fileNamePattern(String fileNamePattern) {
 		this.fileNamePattern = fileNamePattern;
@@ -89,8 +94,9 @@ public class AuditFileBuilder extends AuditComponent<AuditFileBuilder> {
 	
 	/**
 	 * 设置文件内容
-	 * @param dataList
-	 * @return
+	 * @param data 对账数据
+	 * @param totalSize 总大小
+	 * @return 当前对象
 	 */
 	public AuditFileBuilder content(Iterator<AuditIterator> data, int totalSize) {
 		this.data = data;
@@ -98,6 +104,11 @@ public class AuditFileBuilder extends AuditComponent<AuditFileBuilder> {
 		return this;
 	}
 	
+	/**
+	 * 设置内容写入器
+	 * @param contentWriter 内容写入器
+	 * @return 当前对象
+	 */
 	public AuditFileBuilder contentWriter(ContentWriter contentWriter) {
 		this.contentWriter = contentWriter;
 		return this;
@@ -105,8 +116,8 @@ public class AuditFileBuilder extends AuditComponent<AuditFileBuilder> {
 	
 	/**
 	 * 设置上传组件
-	 * @param uploader
-	 * @return
+	 * @param uploader 上传组件
+	 * @return 当前对象
 	 */
 	public AuditFileBuilder uploader(Uploader uploader) {
 		this.uploader = uploader;
@@ -115,7 +126,7 @@ public class AuditFileBuilder extends AuditComponent<AuditFileBuilder> {
 	
 	/**
 	 * 获取结果文件
-	 * @return
+	 * @return 结果文件
 	 */
 	public File getResult() {
 		if(file == null) {
@@ -127,7 +138,6 @@ public class AuditFileBuilder extends AuditComponent<AuditFileBuilder> {
 	
 	/**
 	 * 构造文件
-	 * @return
 	 */
 	public void build() {
 		if(this.fileNamePattern == null ||

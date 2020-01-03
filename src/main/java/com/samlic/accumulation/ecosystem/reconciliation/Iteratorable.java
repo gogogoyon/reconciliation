@@ -10,13 +10,13 @@ import java.util.List;
 public interface Iteratorable {
 	/**
 	 * 关键字列表，定义了数据列在对账文件中顺序
-	 * @return
+	 * @return 关键字列表
 	 */
 	List<String> getKeyList();
 	/**
 	 * 根据关键字获取对应的值
-	 * @param name
-	 * @return
+	 * @param name 关键字
+	 * @return 数据对象
 	 */
 	Object getValue(String name);	
 }

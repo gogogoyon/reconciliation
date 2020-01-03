@@ -14,17 +14,18 @@ public interface FileHandleRecorder {
 	 * @param role 对账角色
 	 * @param pattern 定义文件名称模式
 	 * @param auditTime 对账时间
-	 * @return
+	 * @return 文件处理记录
 	 */
 	FileHandleRecord getRecord(AuditRole role, String pattern, String auditTime);
 	/**
 	 * 保存记录
-	 * @param record
+	 * @param record 文件处理记录
+	 * @return 对账ID
 	 */
 	Long save(FileHandleRecord record);
 	/**
 	 * 更新记录
-	 * @param record
+	 * @param record 文件处理记录
 	 */
 	void update(FileHandleRecord record);
 }

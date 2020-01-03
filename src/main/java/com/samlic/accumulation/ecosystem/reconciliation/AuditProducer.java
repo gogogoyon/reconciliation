@@ -13,6 +13,7 @@ public interface AuditProducer {
 	
 	/**
 	 * 生产指定时间对账数据，此方法可以在一个对账周期内重复调用
+	 * @param auditTime 对账时间字符串
 	 */
 	void produce(String auditTime);
 }

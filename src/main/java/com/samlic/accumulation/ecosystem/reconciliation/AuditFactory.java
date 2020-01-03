@@ -20,7 +20,7 @@ public class AuditFactory {
 	 * 创建对账文件生成器实例
 	 * @param fileNamePattern   文件名称模式
 	 * @param dataList          对账数据列表
-	 * @return
+	 * @return 对账文件生成器
 	 */
 	public static AuditFileBuilder createFileBuilder(String fileNamePattern, List<Iteratorable> dataList) {
 		return new AuditFileBuilder().fileNamePattern(fileNamePattern).uploader(NothingUploader.INSTANCE)
@@ -32,7 +32,7 @@ public class AuditFactory {
 	 * @param fileNamePattern   文件名称模式
 	 * @param dataList          对账数据列表
 	 * @param formatMap       字符串格式化实例映射
-	 * @return
+	 * @return 对账文件生成器
 	 */
 	public static AuditFileBuilder createFileBuilder(String fileNamePattern, List<Iteratorable> dataList, 
 			Map<Class<?>, StringFormater> formatMap) {
@@ -45,7 +45,7 @@ public class AuditFactory {
 	 * @param fileNamePattern   文件名称模式
 	 * @param dataList          对账数据列表
 	 * @param keyList           获取对账数据项的关键字列表，用于组成数据行，列表中顺序决定了数据项的顺序
-	 * @return
+	 * @return 对账文件生成器
 	 */
 	public static AuditFileBuilder createFileBuilder(String fileNamePattern, List<Map<String, Object>> dataList,
 			List<String> keyList) {
@@ -58,7 +58,7 @@ public class AuditFactory {
 	 * @param fileNamePattern  文件名称模式
 	 * @param dataFetcher      数据获取器
 	 * @param keyList          获取对账数据项的关键字列表，用于组成数据行，列表中顺序决定了数据项的顺序
-	 * @return
+	 * @return 对账文件生成器
 	 */
 	public static AuditFileBuilder createFileBuilder(String fileNamePattern, DataFetcher dataFetcher, 
 			List<String> keyList) {
@@ -73,7 +73,7 @@ public class AuditFactory {
 	 * @param dataList        对账数据列表
 	 * @param keyList         获取对账数据项的关键字列表，用于组成数据行，列表中顺序决定了数据项的顺序
 	 * @param formatMap       字符串格式化实例映射
-	 * @return
+	 * @return 对账文件生成器
 	 */
 	public static AuditFileBuilder createFileBuilder(String fileNamePattern, List<Map<String, Object>> dataList,
 			List<String> keyList, Map<Class<?>, StringFormater> formatMap) {
@@ -87,7 +87,7 @@ public class AuditFactory {
 	 * @param dataFetcher      数据获取器
 	 * @param keyList          获取对账数据项的关键字列表，用于组成数据行，列表中顺序决定了数据项的顺序
 	 * @param formatMap        字符串格式化实例映射
-	 * @return
+	 * @return 对账文件生成器
 	 */
 	public static AuditFileBuilder createFileBuilder(String fileNamePattern, DataFetcher dataFetcher, 
 			List<String> keyList, Map<Class<?>, StringFormater> formatMap) {
@@ -99,7 +99,7 @@ public class AuditFactory {
 	 * 创建对账生成者实例
 	 * @param auditFileBuilder   对账文件生成器
 	 * @param recorder           对账文件记录器
-	 * @return
+	 * @return 对账生产者
 	 */
 	public static AuditProducer createProducer(AuditFileBuilder auditFileBuilder, FileHandleRecorder recorder) {
 		return new AuditProducerImpl(auditFileBuilder, recorder);
@@ -108,7 +108,7 @@ public class AuditFactory {
 	/**
 	 * 创建对账生成者实例， 此实例使用空的对账文件记录器
 	 * @param auditFileBuilder  对账文件生成器
-	 * @return
+	 * @return 对账生产者
 	 */
 	public static AuditProducer createProducer(AuditFileBuilder auditFileBuilder) {
 		return new AuditProducerImpl(auditFileBuilder, NothingFileHandleRecorder.INSTANCE);
@@ -117,7 +117,7 @@ public class AuditFactory {
 	/**
 	 * 创建对账文件解析器
 	 * @param file  对账文件
-	 * @return
+	 * @return 对账文件解析器
 	 */
 	public static AuditFileResolver createFileResolver(File file) {
 		return new AuditFileResolver().file(file);				
@@ -127,7 +127,7 @@ public class AuditFactory {
 	 * 创建对账文件解析器
 	 * @param downloader  对账文件下载器
 	 * @param suffix  对账文件后缀
-	 * @return
+	 * @return 对账文件解析器
 	 */
 	public static AuditFileResolver createFileResolver(Downloader downloader, String suffix) {
 		return new AuditFileResolver().addDownloader(downloader).suffix(suffix);			
@@ -135,9 +135,10 @@ public class AuditFactory {
 	
 	/**
 	 * 创建对账文件消费者实例
-	 * @param auditFileResolver  对账文件解析器
-	 * @param recorder           消费记录器
-	 * @param detailHandler      对账明细处理实例
+	 * @param <T> 明细记录对象类型
+	 * @param auditFileResolver 对账文件解析器
+	 * @param recorder          消费记录器
+	 * @param detailHandler     对账明细处理实例
 	 * @return
 	 */
 	public static <T extends BaseConsumeItem> AuditConsumer createConsumer(AuditFileResolver auditFileResolver, ConsumeRecorder<T> recorder, DetailHandler<T> detailHandler) {
@@ -146,9 +147,10 @@ public class AuditFactory {
 	
 	/**
 	 * 创建对账文件消费者实例, 使用空的消费记录器
+     * @param <T> 明细记录对象类型
 	 * @param auditFileResolver  对账文件解析器
 	 * @param detailHandler      对账明细处理实例
-	 * @return
+	 * @return 对账消费者
 	 */
 	public static <T extends BaseConsumeItem> AuditConsumer createConsumer(AuditFileResolver auditFileResolver, DetailHandler<T> detailHandler) {
 		return new AuditConsumerImpl<T>(auditFileResolver, new NothingConsumeRecorder<T>(), detailHandler);
