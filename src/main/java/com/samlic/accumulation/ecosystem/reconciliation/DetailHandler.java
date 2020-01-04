@@ -1,7 +1,7 @@
 package com.samlic.accumulation.ecosystem.reconciliation;
 
 /**
- * 明细数据解析器
+ * 明细数据处理器
  * @author yuanpeng
  *
  * @param <T> 明细记录对象类型
@@ -18,10 +18,15 @@ public interface DetailHandler<T extends BaseConsumeItem> {
 	 * 执行个性化对账逻辑
 	 * @param record 文件处理记录
 	 * @param datail 明细记录
-	 * @return 成功，失败
+	 * @return 处理结果
 	 */
 	Result handle(FileHandleRecord record, T datail);
 	
+	/**
+	 * 自定义处理结果
+	 * @author yuanpeng
+	 *
+	 */
 	static class Result {
 		private String retCode;
 		private String retDesc;
