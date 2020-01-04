@@ -6,6 +6,16 @@
 - AuditProducer: 对账逻辑生产者<br>
 - AuditConsumer: 对账逻辑消费者<br>
 
+## 添加Maven依赖
+
+```xml
+    <dependency>
+	  <groupId>com.samlic</groupId>
+	  <artifactId>reconciliation</artifactId>
+	  <version>1.0.0</version>
+	</dependency>
+```
+
 ## 代码示例
 ### 以Map结构数据为数据源的示例
 ```java
@@ -81,5 +91,5 @@
     AuditFileResolver auditFileResolver = AuditFactory.createFileResolver(file);
     AuditFactory.createConsumer(auditFileResolver, new MyDetailHandler()).consume();
 ```
-### 详细用例代码查看测试类
+## 详细用例代码查看测试类
     com.samlic.accumulation.ecosystem.reconciliation.AuditFileTest
